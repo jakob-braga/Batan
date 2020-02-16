@@ -33,7 +33,7 @@ class Server:
 
         while True:
             try:
-                data = pickle.loads(conn.recv(2048*8))
+                data = pickle.loads(conn.recv(2048*4))
 
                 if not data:
                     print('no data... breaking')

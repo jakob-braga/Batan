@@ -115,8 +115,7 @@ class Client:
     def setup_loop(self):
         self.network = Network("192.168.1.110", 5555)
         self.player = self.network.get_player()
-        print('You are player:', self.player.playerId)
-
+        # print('You are player:', self.player.playerId)
         self.buttons = [Button('3-4 Players', 25, 50, 'make_small_board'),
                         Button('5-6 Players', 155, 50, 'make_big_board'),
                         Button('Randomize Board', 25, 200, 'randomize_board'),
@@ -961,6 +960,9 @@ class Client:
         self.window.blit(self.menu, (self.menu_x, self.menu_y))
         self.draw_buttons(self.trade_buttons)
         pygame.display.update()
+
+    def trade_offer_loop(self):
+        pass
 
     def draw_trade_offer(self):
         pass
