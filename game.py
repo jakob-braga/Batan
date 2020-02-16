@@ -185,6 +185,9 @@ class Game:
             else:
                 self.board.lot[i].thief = False
             i += 1
+
+    def dev_card_bought(self, index):
+        self.dev_cards.pop(index)
             
     # Stealing ################################
     

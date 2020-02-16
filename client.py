@@ -113,9 +113,12 @@ class Client:
     # setup #######################################################
 
     def setup_loop(self):
+        input()
         self.network = Network("192.168.1.110", 5555)
+        input()
         self.player = self.network.get_player()
-        # print('You are player:', self.player.playerId)
+        input()
+        print('You are player:', self.player.playerId)
         self.buttons = [Button('3-4 Players', 25, 50, 'make_small_board'),
                         Button('5-6 Players', 155, 50, 'make_big_board'),
                         Button('Randomize Board', 25, 200, 'randomize_board'),
@@ -574,8 +577,8 @@ class Client:
             pygame.draw.rect(self.window, button_colour, button_dimensions)
             pygame.draw.rect(self.window, button_colour2, button_dimensions, 4)
             text = self.button_font.render(lob[i].text, 1, text_colour)
-            text_x = (lob[i].x + lob[i].width / 2) - (text.get_width() / 2)
-            text_y = (lob[i].y + lob[i].height / 2) - (text.get_height() / 2)
+            text_x = (lob[i].x + lob[i].width // 2) - (text.get_width() // 2)
+            text_y = (lob[i].y + lob[i].height // 2) - (text.get_height() // 2)
             self.window.blit(text, (text_x, text_y))
             if lob[i].clicked:
                 dim_surf = pygame.Surface((lob[i].width, lob[i].height))
@@ -600,11 +603,11 @@ class Client:
                 circle_y = tile.y + 16
                 pygame.draw.circle(self.window, (150, 150, 150), (tile.x, circle_y), 17)
                 pygame.draw.circle(self.window, (200, 200, 200), (tile.x, circle_y), 15)
-                self.window.blit(text, (tile.x - (text.get_width() / 2), circle_y - (text.get_height() / 2)))
+                self.window.blit(text, (tile.x - (text.get_width() // 2), circle_y - (text.get_height() // 2)))
             elif tile.val == -1:
                 pygame.draw.circle(self.window, (220, 220, 220), (tile.x, tile.y), 25)
                 text = self.board_val_font.render(tile.type, 1, (0, 0, 0))
-                self.window.blit(text, (tile.x - (text.get_width() / 2), tile.y - (text.get_height() / 2)))
+                self.window.blit(text, (tile.x - (text.get_width() // 2), tile.y - (text.get_height() // 2)))
             if tile.thief:
                 point_list = [(tile.x - 25, tile.y - 20), (tile.x + 25, tile.y - 20), (tile.x, tile.y + 23)]
                 pygame.draw.polygon(self.window, (0, 0, 0), point_list)
@@ -1042,7 +1045,6 @@ class Client:
     def draw_resource_loop(self, reason):
         self.window.blit(self.menu, (self.menu_x, self.menu_y))
         self.draw_buttons(self.resource_buttons)
-
 
         pygame.display.update()
 

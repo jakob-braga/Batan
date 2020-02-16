@@ -1,5 +1,4 @@
 import pygame
-import math
 
 
 def fade_out(window, window_size):
@@ -20,7 +19,3 @@ def dim(window, window_size):
     dim_surf.set_alpha(120)
     window.blit(dim_surf, (0, 0))
 
-
-def dist(x1, y1, x2, y2):
-    distance = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
-    return distance

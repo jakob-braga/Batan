@@ -1,4 +1,4 @@
-from setup import *
+import math
 
 
 class Tile:
@@ -18,3 +18,8 @@ class Tile:
             return True
         else:
             return False
+
+
+def dist(x1, y1, x2, y2):
+    distance = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+    return distance
