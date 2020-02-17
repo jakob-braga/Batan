@@ -47,6 +47,8 @@ class Server:
                     elif isinstance(data, dict):
                         getattr(self.game, data['call'])(data['data'])
 
+                    self.game.vp_updates()
+
                     conn.sendall(pickle.dumps(self.game))
             except:
                 break

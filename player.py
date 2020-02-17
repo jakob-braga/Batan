@@ -10,6 +10,9 @@ class Player:
 
         self.army = 0
 
+        self.largest_army = False
+        self.longest_road = False
+
         self.settlements = []
         self.roads = []
         self.dev_cards = ['monopoly', 'plenty', 'build_roads', 'soldier']
@@ -141,3 +144,17 @@ class Player:
     def has_resources(self):
         can = self.wheat or self.lumber or self.ore or self.brick or self.sheep
         return can
+
+    # victory_points
+
+    def count_vps(self):
+        vps = 0
+        for settlement in self.settlements:
+            vps += settlement.level
+        vps += self.dev_cards.count('victory_point')
+        if self.longest_road:
+            vps += 2
+        if self.largest_army:
+            vps += 2
+        return vps
+

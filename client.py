@@ -1,7 +1,6 @@
 from network import Network
 from button import Button
 from structs import *
-from text import *
 import random
 
 pygame.init()
@@ -211,7 +210,6 @@ class Client:
                 self.game = self.network.send(self.player)
             except:
                 print("Couldn't receive game info")
-                break
 
             if self.game.first_rotate:
                 self.starting_rotation()
@@ -228,6 +226,17 @@ class Client:
                 self.trade_offer_loop()
             elif self.game.accept_trade and self.game.player_turn == self.player.playerId:
                 self.collect_trade()
+                self.notify('Trade Accepted By Player ' + str(self.game.players[self.game.trade_id].playerId))
+
+            if self.game.longest_road == self.player.playerId:
+                self.player.longest_road = True
+            else:
+                self.player.longest_road = False
+
+            if self.game.largest_army == self.player.playerId:
+                self.player.largest_army = True
+            else:
+                self.player.largest_army = False
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -546,7 +555,7 @@ class Client:
         pygame.display.update()
         self.first_collect()
 
-    def print_text(self, rect, full_text, clear=True):
+    def print_text(self, rect, full_text, clear=True, center=False):
         if clear:
             pygame.draw.rect(self.window, (0, 0, 0), rect)
         low = split_text(full_text)
@@ -575,7 +584,11 @@ class Client:
 
         while j < len(lot):
             text_surf = font.render(lot[j], True, text_colour, True).convert_alpha()
-            self.window.blit(text_surf, (rect[0], rect[1] + (j * text_surf.get_height())))
+            if center:
+                text_x = rect[0] + ((rect[2] - text_surf.get_width()) // 2)
+            else:
+                text_x = rect[0]
+            self.window.blit(text_surf, (text_x, rect[1] + (j * text_surf.get_height())))
             j += 1
 
     def draw_buttons(self, lob):
@@ -1006,10 +1019,15 @@ class Client:
                         if button.click_check(pos):
                             button.click()
                             if button.text == 'Accept':
-                                self.player.lumber += self.game.resources_to_give.count('lumber')
+                                self.player.wheat -= self.game.resources_to_get.count('wheat')
                                 self.player.wheat += self.game.resources_to_give.count('wheat')
-                                self.player.brick += self.game.resources_to_give.count('wheat')
+                                self.player.ore -= self.game.resources_to_get.count('ore')
                                 self.player.ore += self.game.resources_to_give.count('ore')
+                                self.player.brick -= self.game.resources_to_get.count('brick')
+                                self.player.brick += self.game.resources_to_give.count('brick')
+                                self.player.lumber -= self.game.resources_to_get.count('lumber')
+                                self.player.lumber += self.game.resources_to_give.count('lumber')
+                                self.player.sheep -= self.game.resources_to_get.count('sheep')
                                 self.player.sheep += self.game.resources_to_give.count('sheep')
                             try:
                                 self.game = self.network.send(button.data)
@@ -1062,10 +1080,15 @@ class Client:
 
     def collect_trade(self):
         self.player.wheat += self.game.resources_to_get.count('wheat')
+        self.player.wheat -= self.game.resources_to_give.count('wheat')
         self.player.ore += self.game.resources_to_get.count('ore')
+        self.player.ore -= self.game.resources_to_give.count('ore')
         self.player.brick += self.game.resources_to_get.count('brick')
+        self.player.brick -= self.game.resources_to_give.count('brick')
         self.player.lumber += self.game.resources_to_get.count('lumber')
+        self.player.lumber -= self.game.resources_to_give.count('lumber')
         self.player.sheep += self.game.resources_to_get.count('sheep')
+        self.player.sheep -= self.game.resources_to_give.count('sheep')
         try:
             self.game = self.network.send('trade_collected')
         except:

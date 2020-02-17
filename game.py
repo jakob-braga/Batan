@@ -20,6 +20,16 @@ class Game:
         self.in_trade = False
         self.trade_id = -1
         self.accept_trade = False
+
+        # vps
+        self.record_army = 2
+        self.record_road = 4
+        self.largest_army = -1
+        self.longest_road = -1
+
+        # winning
+        self.winning_player = -1
+        self.game_over = False
         
         # stealing
         self.robbed_player_id = -1
@@ -232,3 +242,14 @@ class Game:
         self.accept_trade = False
         self.resources_to_get = []
 
+    def vp_updates(self):
+        for player in self.players:
+            if len(player.roads) > self.record_road:
+                self.longest_road = player.playerId
+                self.record_road = len(player.roads)
+            if player.army > self.record_army:
+                self.largest_army = player.playerId
+                self.record_army = player.army
+            if player.count_vps() >= 10:
+                self.game_over = True
+                self.winning_player = player.playerId
