@@ -50,6 +50,7 @@ class Client:
         self.dev_card_buttons = []
         self.resource_buttons = []
         self.trade_buttons = []
+        self.trade_offer_buttons = []
 
         # board
         self.board_val_font = pygame.font.SysFont('times, new roman', 14, True)
@@ -58,9 +59,9 @@ class Client:
         self.side_bar = pygame.image.load('images/side_bar.png').convert_alpha()
 
         self.menu = pygame.transform.scale(self.side_bar, (800, 500))
-        self.menu_x = self.side_bar.get_width() + ((width - self.side_bar.get_width() - self.menu.get_width()) / 2)
-        self.menu_y = (height - self.menu.get_height()) / 2
-        self.menu_center = self.menu_x + (self.menu.get_width() / 2)
+        self.menu_x = self.side_bar.get_width() + ((width - self.side_bar.get_width() - self.menu.get_width()) // 2)
+        self.menu_y = (height - self.menu.get_height()) // 2
+        self.menu_center = self.menu_x + (self.menu.get_width() // 2)
 
         self.side_bar_width = self.side_bar.get_width()
         self.tile_dict = {
@@ -78,25 +79,25 @@ class Client:
         self.title_font = pygame.font.SysFont('times, new roman', 18, True)
         title_font_colour = (220, 220, 220)
         self.resource_title = self.title_font.render('Resources', True, title_font_colour)
-        self.resource_title_x = (self.side_bar_width - self.resource_title.get_width()) / 2
+        self.resource_title_x = (self.side_bar_width - self.resource_title.get_width()) // 2
         self.resource_title_y = 95
         self.option_title = self.title_font.render('Buy Options', True, title_font_colour)
-        self.option_title_x = (self.side_bar_width - self.option_title.get_width()) / 2
+        self.option_title_x = (self.side_bar_width - self.option_title.get_width()) // 2
         self.option_title_y = 210
         self.resource_font = pygame.font.SysFont('times, new roman', 16, True)
 
     def title_screen(self):
         run = True
+        font = pygame.font.SysFont("times, new roman", 20)
+        text = font.render("Click to Play!", 1, (225, 167, 25))
+        text_x = (width - text.get_width()) // 2
+        text_y = height - 75
 
         title_img = pygame.image.load('images/title_screen.png').convert()
 
         while run:
             clock.tick(60)
             self.window.blit(title_img, (0, 0))
-            font = pygame.font.SysFont("times, new roman", 20)
-            text = font.render("Click to Play!", 1, (225, 167, 25))
-            text_x = (width - text.get_width()) // 2
-            text_y = height - 75
             self.window.blit(text, (text_x, text_y))
             pygame.display.update()
 
@@ -104,7 +105,7 @@ class Client:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     run = False
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
                     run = False
 
         fade_out(self.window, (width, height))
@@ -113,11 +114,11 @@ class Client:
     # setup #######################################################
 
     def setup_loop(self):
-        input()
+        # input()
         self.network = Network("192.168.1.110", 5555)
-        input()
+        # input()
         self.player = self.network.get_player()
-        input()
+        # input()
         print('You are player:', self.player.playerId)
         self.buttons = [Button('3-4 Players', 25, 50, 'make_small_board'),
                         Button('5-6 Players', 155, 50, 'make_big_board'),
@@ -223,6 +224,10 @@ class Client:
                 self.in_monopoly()
             elif self.game.robbing and self.game.robbed_player_id == self.player.playerId:
                 self.robbed()
+            elif self.game.in_trade and self.game.trade_id == self.player.playerId:
+                self.trade_offer_loop()
+            elif self.game.accept_trade and self.game.player_turn == self.player.playerId:
+                self.collect_trade()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -303,6 +308,9 @@ class Client:
         if self.player.playerId != self.game.player_turn:
             for button in self.buttons:
                 button.active = False
+        elif self.game.in_trade:
+            for button in self.buttons:
+                button.active = False
 
     def draw_main(self):
         # clear and side bar
@@ -313,17 +321,17 @@ class Client:
         player_turn_colour = self.player_colours[self.game.player_turn]
         player_colour = self.player_colours[self.player.playerId]
 
-        # indication of whos turn it is (side bar)
+        # indication of whose turn it is (side bar)
         if self.player.playerId == self.game.player_turn:
             turn_text = self.title_font.render('Your Turn', True, player_turn_colour)
         else:
             turn_text = self.title_font.render('Player ' + str(self.game.player_turn) + '\'s Turn', True, player_turn_colour)
-        turn_text_x = (self.side_bar_width - turn_text.get_width()) / 2
+        turn_text_x = (self.side_bar_width - turn_text.get_width()) // 2
         self.window.blit(turn_text, (turn_text_x, 500))
 
         # who you are (side bar)
         player_indicator = self.title_font.render('Player ' + str(self.player.playerId), True, player_colour)
-        player_indicator_x = (self.side_bar_width - player_indicator.get_width()) / 2
+        player_indicator_x = (self.side_bar_width - player_indicator.get_width()) // 2
         self.window.blit(player_indicator, (player_indicator_x, 30))
 
         # sub titles (side bar)
@@ -338,6 +346,11 @@ class Client:
         if self.turn_change != self.game.player_turn:
             self.turn_indicator()
             self.turn_change = self.game.player_turn
+
+        if self.game.in_trade and self.player.playerId == self.game.player_turn:
+            dim(self.window, (width, height))
+            self.print_text((309, 9, 250, 500), 'Trade Pending...')
+            self.draw_board()
 
         pygame.display.update()
 
@@ -457,6 +470,8 @@ class Client:
 
         while roll_loop:
 
+            clock.tick(60)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
@@ -531,8 +546,9 @@ class Client:
         pygame.display.update()
         self.first_collect()
 
-    def print_text(self, rect, full_text):
-        pygame.draw.rect(self.window, (0, 0, 0), rect)
+    def print_text(self, rect, full_text, clear=True):
+        if clear:
+            pygame.draw.rect(self.window, (0, 0, 0), rect)
         low = split_text(full_text)
         font = self.big_font
         text = None
@@ -693,6 +709,8 @@ class Client:
 
         while dev_card_loop:
 
+            clock.tick(60)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
@@ -818,7 +836,7 @@ class Client:
             if tile.thief:
                 index_thief = self.game.board.lot.index(tile)
 
-        reduced_list = self.game.players
+        reduced_list = self.game.players.copy()
         reduced_list.pop(self.player.playerId)
 
         steal_player_list = []
@@ -900,6 +918,8 @@ class Client:
 
         while trade_choose:
 
+            clock.tick(60)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
@@ -965,10 +985,91 @@ class Client:
         pygame.display.update()
 
     def trade_offer_loop(self):
-        pass
+        self.trade_offer_buttons = [
+            Button('Accept', self.menu_x + 50, self.menu_y + 50, 'trade_accepted'),
+            Button('Decline', self.menu_x + 300, self.menu_y + 50, 'rotate_trade_offer')
+        ]
+
+        trade_offer = True
+
+        while trade_offer:
+
+            clock.tick(60)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+
+                elif event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                    pos = pygame.mouse.get_pos()
+                    for button in self.trade_offer_buttons:
+                        if button.click_check(pos):
+                            button.click()
+                            if button.text == 'Accept':
+                                self.player.lumber += self.game.resources_to_give.count('lumber')
+                                self.player.wheat += self.game.resources_to_give.count('wheat')
+                                self.player.brick += self.game.resources_to_give.count('wheat')
+                                self.player.ore += self.game.resources_to_give.count('ore')
+                                self.player.sheep += self.game.resources_to_give.count('sheep')
+                            try:
+                                self.game = self.network.send(button.data)
+                            except:
+                                print('failed call: ' + button.data)
+                            trade_offer = False
+
+            self.trade_offer_buttons_update()
+            self.draw_trade_offer()
 
     def draw_trade_offer(self):
-        pass
+        self.window.blit(self.menu, (self.menu_x, self.menu_y))
+        wanted = 'Wanted: '
+        for item in self.game.resources_to_get:
+            wanted = wanted + item + ', '
+        offered = 'Offered: '
+        for item in self.game.resources_to_give:
+            offered = offered + item + ', '
+        self.draw_buttons(self.trade_offer_buttons)
+        self.print_text((self.menu_x + 30, self.menu_y + 200, self.menu.get_width() - 60, self.menu.get_height()), wanted, clear=False)
+        self.print_text((self.menu_x + 30, self.menu_y + 300, self.menu.get_width() - 60, self.menu.get_height()), offered, clear=False)
+        pygame.display.update()
+
+    def trade_offer_buttons_update(self):
+        self.trade_offer_buttons[1].active = True
+        lumber = 0
+        sheep = 0
+        ore = 0
+        wheat = 0
+        brick = 0
+        for item in self.game.resources_to_get:
+            if item == 'lumber':
+                lumber += 1
+            elif item == 'sheep':
+                sheep += 1
+            elif item == 'ore':
+                ore += 1
+            elif item == 'wheat':
+                wheat += 1
+            elif item == 'brick':
+                brick += 1
+
+        if self.player.lumber >= lumber and self.player.sheep >= sheep and self.player.ore >= ore:
+            if self.player.wheat >= wheat and self.player.brick >= brick:
+                self.trade_offer_buttons[0].active = True
+            else:
+                self.trade_offer_buttons[0].active = False
+        else:
+            self.trade_offer_buttons[0].active = False
+
+    def collect_trade(self):
+        self.player.wheat += self.game.resources_to_get.count('wheat')
+        self.player.ore += self.game.resources_to_get.count('ore')
+        self.player.brick += self.game.resources_to_get.count('brick')
+        self.player.lumber += self.game.resources_to_get.count('lumber')
+        self.player.sheep += self.game.resources_to_get.count('sheep')
+        try:
+            self.game = self.network.send('trade_collected')
+        except:
+            print('failed call: trade_collected')
 
     # choosing resources loop ####################################
 
@@ -980,13 +1081,15 @@ class Client:
                                  Button('Sheep', self.menu_x + 275, self.menu_y + 220, 'sheep')]
 
         if reason == 'trade_to_give' or reason == 'trade_to_take':
-            self.resource_buttons.append(Button('Submit', 400, 100, 'submit_trade'))
+            self.resource_buttons.append(Button('Submit', self.menu_center, self.menu_y + 400, 'submit_trade'))
 
         self.resources_selected = []
 
         choose_loop = True
 
         while choose_loop:
+
+            clock.tick(60)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -1034,12 +1137,20 @@ class Client:
             self.resource_buttons[3].active = self.player.ore >= 3
             self.resource_buttons[4].active = self.player.sheep >= 3
 
-        else:
-            self.resource_buttons[0].active = self.player.lumber > 0
-            self.resource_buttons[1].active = self.player.wheat > 0
-            self.resource_buttons[2].active = self.player.brick > 0
-            self.resource_buttons[3].active = self.player.ore > 0
-            self.resource_buttons[4].active = self.player.sheep > 0
+        elif reason == 'trade_to_give':
+            self.resource_buttons[0].active = self.player.lumber - self.resources_selected.count('lumber') > 0
+            self.resource_buttons[1].active = self.player.wheat - self.resources_selected.count('wheat') > 0
+            self.resource_buttons[2].active = self.player.brick - self.resources_selected.count('brick') > 0
+            self.resource_buttons[3].active = self.player.ore - self.resources_selected.count('ore') > 0
+            self.resource_buttons[4].active = self.player.sheep - self.resources_selected.count('sheep') > 0
+            self.resource_buttons[5].active = True
+
+        elif reason == 'trade_to_take':
+            self.resource_buttons[0].active = True
+            self.resource_buttons[1].active = True
+            self.resource_buttons[2].active = True
+            self.resource_buttons[3].active = True
+            self.resource_buttons[4].active = True
             self.resource_buttons[5].active = True
 
     def draw_resource_loop(self, reason):

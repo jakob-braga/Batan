@@ -1,3 +1,4 @@
+from tile import *
 from setup import *
 
 

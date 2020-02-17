@@ -19,6 +19,7 @@ class Game:
         self.resources_to_get = None
         self.in_trade = False
         self.trade_id = -1
+        self.accept_trade = False
         
         # stealing
         self.robbed_player_id = -1
@@ -201,7 +202,9 @@ class Game:
 
     # Trade ###############################
 
-    def send_trade_offer(self, give, get):
+    def send_trade_offer(self, data):
+        give = data[0]
+        get = data[1]
         self.in_trade = True
         self.resources_to_give = give
         self.resources_to_get = get
@@ -217,3 +220,15 @@ class Game:
             self.trade_id += 1
         if self.trade_id == self.player_turn:
             self.in_trade = False
+            self.resources_to_give = []
+            self.resources_to_get = []
+
+    def trade_accepted(self):
+        self.in_trade = False
+        self.resources_to_give = []
+        self.accept_trade = True
+
+    def trade_collected(self):
+        self.accept_trade = False
+        self.resources_to_get = []
+
