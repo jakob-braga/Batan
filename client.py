@@ -113,11 +113,11 @@ class Client:
     # setup #######################################################
 
     def setup_loop(self):
-        # input()
-        self.network = Network("192.168.1.110", 5555)
-        # input()
+        input()
+        self.network = Network("69.63.43.48", 5555)
+        input()
         self.player = self.network.get_player()
-        # input()
+        input()
         print('You are player:', self.player.playerId)
         self.buttons = [Button('3-4 Players', 25, 50, 'make_small_board'),
                         Button('5-6 Players', 155, 50, 'make_big_board'),
@@ -1097,14 +1097,14 @@ class Client:
     # choosing resources loop ####################################
 
     def choose_resource_loop(self, reason):
-        self.resource_buttons = [Button('Lumber', self.menu_x + 20, self.menu_y + 20, 'lumber'),
-                                 Button('Wheat', self.menu_x + 190, self.menu_y + 20, 'wheat'),
-                                 Button('Brick', self.menu_x + 360, self.menu_y + 20, 'brick'),
-                                 Button('Ore', self.menu_x + 105, self.menu_y + 220, 'ore'),
-                                 Button('Sheep', self.menu_x + 275, self.menu_y + 220, 'sheep')]
+        self.resource_buttons = [Button('Lumber', self.menu_x + 150, self.menu_y + 100, 'lumber'),
+                                 Button('Wheat', self.menu_x + 320, self.menu_y + 100, 'wheat'),
+                                 Button('Brick', self.menu_x + 490, self.menu_y + 100, 'brick'),
+                                 Button('Ore', self.menu_x + 235, self.menu_y + 220, 'ore'),
+                                 Button('Sheep', self.menu_x + 405, self.menu_y + 220, 'sheep')]
 
         if reason == 'trade_to_give' or reason == 'trade_to_take':
-            self.resource_buttons.append(Button('Submit', self.menu_center, self.menu_y + 400, 'submit_trade'))
+            self.resource_buttons.append(Button('Submit', self.menu_center - 75, self.menu_y + 400, 'submit_trade'))
 
         self.resources_selected = []
 
@@ -1177,7 +1177,26 @@ class Client:
             self.resource_buttons[5].active = True
 
     def draw_resource_loop(self, reason):
+        title = 'there was an error'
+        if reason == 'monopoly':
+            title = 'Choose a resource'
+        elif reason == 'choose_one':
+            title = 'Choose a resource to receive'
+        elif reason == '3:1' or reason == '4:1':
+            title = 'Choose the resource you would like to trade'
+        elif reason == 'year_of_plenty':
+            title = 'Choose 2 resources'
+        elif reason == 'trade_to_give':
+            title = 'Choose the resource(s) you would like to trade'
+        elif reason == 'trade_to_take':
+            title = 'Choose the resource(s) you would like to receive'
+        text = 'Selected: '
+        for item in self.resources_selected:
+            text = text + item + ', '
+
         self.window.blit(self.menu, (self.menu_x, self.menu_y))
+        self.print_text((self.menu_x, self.menu_y + 20, self.menu.get_width(), 100), title, clear=False, center=True)
+        self.print_text((self.menu_x, self.menu_y + 330, self.menu.get_width(), 100), text, clear=False, center=True)
         self.draw_buttons(self.resource_buttons)
 
         pygame.display.update()
