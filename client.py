@@ -113,11 +113,11 @@ class Client:
     # setup #######################################################
 
     def setup_loop(self):
-        input()
-        self.network = Network("69.63.43.48", 5555)
-        input()
+        s_f = open('server_ip.txt', 'r')
+        s_ip = s_f.read()
+        self.network = Network(s_ip, 5555)
+        s_f.close()
         self.player = self.network.get_player()
-        input()
         print('You are player:', self.player.playerId)
         self.buttons = [Button('3-4 Players', 25, 50, 'make_small_board'),
                         Button('5-6 Players', 155, 50, 'make_big_board'),
@@ -712,11 +712,16 @@ class Client:
 
     def view_dev_cards_loop(self):
         dim(self.window, (width, height))
-        self.dev_card_buttons = [Button('Monopoly', 300, 300, None),
-                                 Button('Year of Plenty', 460, 300, None),
-                                 Button('Victory Point', 620, 300, None),
-                                 Button('Build Roads', 390, 450, None),
-                                 Button('Soldier', 550, 450, None)]
+        mon_amount = '(x' + str(self.player.dev_cards.count('monopoly')) + ')'
+        yop_amount = '(x' + str(self.player.dev_cards.count('plenty')) + ')'
+        vp_amount = '(x' + str(self.player.dev_cards.count('victory_point')) + ')'
+        br_amount = '(x' + str(self.player.dev_cards.count('build_roads')) + ')'
+        sol_amount = '(x' + str(self.player.dev_cards.count('soldier')) + ')'
+        self.dev_card_buttons = [Button('Monopoly ' + mon_amount, self.menu_x + 170, 300, None),
+                                 Button('Year of Plenty ' + yop_amount, self.menu_x + 330, 300, None),
+                                 Button('Victory Point ' + vp_amount, self.menu_x + 490, 300, None),
+                                 Button('Build Roads ' + br_amount, self.menu_x + 250, 450, None),
+                                 Button('Soldier ' + sol_amount, self.menu_x + 410, 450, None)]
 
         dev_card_loop = True
 
@@ -732,7 +737,7 @@ class Client:
                     for button in self.dev_card_buttons:
                         if button.click_check(pos) and button.active:
                             button.click()
-                            if button.text == 'Monopoly':
+                            if 'Monopoly' in button.text:
                                 self.choose_resource_loop('monopoly')
                                 data = {
                                     'call': 'monopoly',
@@ -759,7 +764,7 @@ class Client:
                                 self.player.pop_dev_card('monopoly')
                                 dev_card_loop = False
 
-                            elif button.text == 'Year of Plenty':
+                            elif 'Year of Plenty' in button.text:
                                 self.choose_resource_loop('year_of_plenty')
                                 for resource in self.resources_selected:
                                     if resource == 'lumber':
@@ -775,7 +780,7 @@ class Client:
                                 self.player.pop_dev_card('plenty')
                                 dev_card_loop = False
 
-                            elif button.text == 'Build Roads':
+                            elif 'Build Roads' in button.text:
                                 self.road_card = True
                                 self.draw_main()
                                 self.placing_road_pos1 = True
@@ -795,7 +800,7 @@ class Client:
                                 dev_card_loop = False
                                 self.player.pop_dev_card('build_roads')
 
-                            elif button.text == 'Soldier':
+                            elif 'Soldier' in button.text:
                                 self.draw_main()
                                 self.moving_thief = True
                                 self.place_loop()
@@ -839,6 +844,8 @@ class Client:
     def draw_dev_card_loop(self):
         self.window.blit(self.menu, (self.menu_x, self.menu_y))
         self.draw_buttons(self.dev_card_buttons)
+        text_rect = (self.menu_x, self.menu_y + 40, self.menu.get_width(), self.menu.get_height())
+        self.print_text(text_rect, 'Your Development Cards', clear=False, center=True)
         pygame.display.update()
 
     # Steal #####################################################
@@ -995,12 +1002,14 @@ class Client:
     def draw_trade_loop(self):
         self.window.blit(self.menu, (self.menu_x, self.menu_y))
         self.draw_buttons(self.trade_buttons)
+        text_rect = (self.menu_x, self.menu_y + 20, self.menu.get_width(), self.menu_y)
+        self.print_text(text_rect, 'Select Trade', clear=False, center=True)
         pygame.display.update()
 
     def trade_offer_loop(self):
         self.trade_offer_buttons = [
-            Button('Accept', self.menu_x + 50, self.menu_y + 50, 'trade_accepted'),
-            Button('Decline', self.menu_x + 300, self.menu_y + 50, 'rotate_trade_offer')
+            Button('Accept', self.menu_x + 100, self.menu_y + 130, 'trade_accepted'),
+            Button('Decline', self.menu_x + 350, self.menu_y + 130, 'rotate_trade_offer')
         ]
 
         trade_offer = True
@@ -1047,8 +1056,12 @@ class Client:
         for item in self.game.resources_to_give:
             offered = offered + item + ', '
         self.draw_buttons(self.trade_offer_buttons)
-        self.print_text((self.menu_x + 30, self.menu_y + 200, self.menu.get_width() - 60, self.menu.get_height()), wanted, clear=False)
-        self.print_text((self.menu_x + 30, self.menu_y + 300, self.menu.get_width() - 60, self.menu.get_height()), offered, clear=False)
+        wanted_rect = (self.menu_x, self.menu_y + 200, self.menu.get_width(), self.menu.get_height())
+        self.print_text(wanted_rect, wanted, clear=False, center=True)
+        offered_rect = (self.menu_x, self.menu_y + 300, self.menu.get_width(), self.menu.get_height())
+        self.print_text(offered_rect, offered, clear=False, center=True)
+        title_rect = (self.menu_x, self.menu_y + 30, self.menu.get_width(), self.menu.get_height())
+        self.print_text(title_rect, 'Incoming Trade Offer', clear=False, center=True)
         pygame.display.update()
 
     def trade_offer_buttons_update(self):
@@ -1200,6 +1213,28 @@ class Client:
         self.draw_buttons(self.resource_buttons)
 
         pygame.display.update()
+
+    # game_over ##################################################
+
+    def game_over_loop(self):
+        show_loop = True
+
+        if self.player.playerId == self.game.winning_player:
+            text = 'YOU WON!'
+        else:
+            text = 'Player ' + self.game.winning_player.playerId + ' WON! $%^ LOSER!'
+
+        dim(self.window, (width, height))
+        self.window.blit(self.menu, (self.menu_x, self.menu_y))
+        self.print_text((self.menu_x, self.menu_y + 100, self.menu.get_width(), 200), text, clear=False, center=True)
+
+        while show_loop:
+
+            clock.tick(60)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
 
 
 client = Client()
