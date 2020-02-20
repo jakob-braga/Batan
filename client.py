@@ -227,6 +227,8 @@ class Client:
             elif self.game.accept_trade and self.game.player_turn == self.player.playerId:
                 self.collect_trade()
                 self.notify('Trade Accepted By Player ' + str(self.game.players[self.game.trade_id].playerId))
+            elif self.game.game_over:
+                self.game_over_loop()
 
             if self.game.longest_road == self.player.playerId:
                 self.player.longest_road = True
