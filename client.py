@@ -208,8 +208,8 @@ class Client:
 
             try:
                 self.game = self.network.send(self.player)
-            except:
-                print("Couldn't receive game info")
+            except Exception as e:
+                print(e)
 
             if self.game.first_rotate:
                 self.starting_rotation()

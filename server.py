@@ -3,6 +3,7 @@ from _thread import *
 import pickle
 from game import Game
 from player import Player
+from structs import *
 
 
 class Server:
@@ -50,7 +51,8 @@ class Server:
                     self.game.vp_updates()
 
                     conn.sendall(pickle.dumps(self.game))
-            except:
+            except Exception as e:
+                print(e)
                 break
 
         print("Lost connection")

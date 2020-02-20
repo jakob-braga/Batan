@@ -1,5 +1,6 @@
 from player import *
 from game import *
+from structs import *
 import socket
 import pickle
 
