@@ -148,7 +148,7 @@ class Player:
     # victory_points
 
     def count_vps(self):
-        vps = 3
+        vps = 0
         for settlement in self.settlements:
             vps += settlement.level
         vps += self.dev_cards.count('victory_point')
