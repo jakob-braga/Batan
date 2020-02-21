@@ -42,3 +42,11 @@ def back_to_text(low):
     for word in low:
         text = text + word
     return text
+
+def list_of_str_to_str(start, los):
+    new_str = start
+    for i in range(0, len(los)):
+        new_str = new_str + los[i].capitalize()
+        if i != len(los) - 1:
+            new_str = new_str + ', '
+    return new_str

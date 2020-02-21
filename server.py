@@ -34,7 +34,7 @@ class Server:
 
         while True:
             try:
-                data = pickle.loads(conn.recv(2048*4))
+                data = pickle.loads(conn.recv(2048*8))
 
                 if not data:
                     print('no data... breaking')
@@ -63,7 +63,7 @@ class Server:
         self.game.players.pop(p)
         self.idCount -= 1
         # this is a bug if you cant figure out why later you suck, (p is not a constant spot if
-        # more than 1 player disconnects)
+        # more than 1 player disconnects) TODO this
         conn.close()
 
     def run_server(self):

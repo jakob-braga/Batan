@@ -2,11 +2,11 @@ class Player:
     def __init__(self, playerId):
         self.playerId = playerId
 
-        self.lumber = 0
-        self.wheat = 0
-        self.sheep = 0
+        self.lumber = 1
+        self.wheat = 1
+        self.sheep = 1
         self.ore = 0
-        self.brick = 0
+        self.brick = 1
 
         self.army = 0
 
@@ -15,7 +15,7 @@ class Player:
 
         self.settlements = []
         self.roads = []
-        self.dev_cards = ['monopoly', 'plenty', 'build_roads', 'soldier']
+        self.dev_cards = (['soldier'] * 3) + (['build_roads'] * 3)
 
         self.ready = False
 
@@ -148,7 +148,7 @@ class Player:
     # victory_points
 
     def count_vps(self):
-        vps = 0
+        vps = 3
         for settlement in self.settlements:
             vps += settlement.level
         vps += self.dev_cards.count('victory_point')

@@ -349,6 +349,16 @@ class Client:
         self.window.blit(self.resource_title, (self.resource_title_x, self.resource_title_y))
         self.window.blit(self.option_title, (self.option_title_x, self.option_title_y))
 
+        # longest road/largest army
+        if self.game.longest_road != -1:
+            self.print_text((width - 220, 10, 240, 200), 'Longest Road: Player ' + str(self.game.longest_road))
+        if self.game.largest_army != -1:
+            self.print_text((width - 220, 35, 240, 200), 'Largest Army: Player ' + str(self.game.largest_army))
+        if self.game.players[self.game.player_turn].dev_cards:
+            dev_card_count_text = 'Player ' + str(self.game.player_turn) + ' has '
+            dev_card_count_text = dev_card_count_text + str(len(self.game.players[self.game.player_turn].dev_cards)) + ' unplayed dev cards'
+            self.print_text((self.side_bar_width + 10, height - 25, width, 40), dev_card_count_text)
+
         self.draw_buttons(self.buttons)
         self.draw_board()
         self.draw_resources()
@@ -522,7 +532,7 @@ class Client:
         self.print_text((309, 9, 250, 500), 'Dice Rolled! $%^ Outcome: ' + str(self.game.roll_sum))
         self.draw_board()
         pygame.display.update()
-        pygame.time.delay(2000)
+        pygame.time.delay(2500)
         pygame.draw.rect(self.window, (0, 0, 0), (310, 10, 400, 400))
         self.draw_board()
         pygame.display.update()
@@ -921,7 +931,7 @@ class Client:
             self.game = self.network.send('stop_robbing')
         except:
             print('failed to stop robbing')
-        text = 'A' + robbed_resource + 'has been stolen!'
+        text = 'A ' + robbed_resource + ' has been stolen!'
         self.notify(text)
 
     # trade ######################################################
@@ -1010,8 +1020,8 @@ class Client:
 
     def trade_offer_loop(self):
         self.trade_offer_buttons = [
-            Button('Accept', self.menu_x + 100, self.menu_y + 130, 'trade_accepted'),
-            Button('Decline', self.menu_x + 350, self.menu_y + 130, 'rotate_trade_offer')
+            Button('Accept', self.menu_x + 220, self.menu_y + 400, 'trade_accepted'),
+            Button('Decline', self.menu_x + 470, self.menu_y + 400, 'rotate_trade_offer')
         ]
 
         trade_offer = True
@@ -1051,16 +1061,12 @@ class Client:
 
     def draw_trade_offer(self):
         self.window.blit(self.menu, (self.menu_x, self.menu_y))
-        wanted = 'Wanted: '
-        for item in self.game.resources_to_get:
-            wanted = wanted + item + ', '
-        offered = 'Offered: '
-        for item in self.game.resources_to_give:
-            offered = offered + item + ', '
+        wanted = list_of_str_to_str('Wanted: ', self.game.resources_to_get)
+        offered = list_of_str_to_str('Offered: ', self.game.resources_to_give)
         self.draw_buttons(self.trade_offer_buttons)
-        wanted_rect = (self.menu_x, self.menu_y + 200, self.menu.get_width(), self.menu.get_height())
+        wanted_rect = (self.menu_x, self.menu_y + 130, self.menu.get_width(), self.menu.get_height())
         self.print_text(wanted_rect, wanted, clear=False, center=True)
-        offered_rect = (self.menu_x, self.menu_y + 300, self.menu.get_width(), self.menu.get_height())
+        offered_rect = (self.menu_x, self.menu_y + 250, self.menu.get_width(), self.menu.get_height())
         self.print_text(offered_rect, offered, clear=False, center=True)
         title_rect = (self.menu_x, self.menu_y + 30, self.menu.get_width(), self.menu.get_height())
         self.print_text(title_rect, 'Incoming Trade Offer', clear=False, center=True)
@@ -1205,9 +1211,7 @@ class Client:
             title = 'Choose the resource(s) you would like to trade'
         elif reason == 'trade_to_take':
             title = 'Choose the resource(s) you would like to receive'
-        text = 'Selected: '
-        for item in self.resources_selected:
-            text = text + item + ', '
+        text = list_of_str_to_str('Selected: ', self.resources_selected)
 
         self.window.blit(self.menu, (self.menu_x, self.menu_y))
         self.print_text((self.menu_x, self.menu_y + 20, self.menu.get_width(), 100), title, clear=False, center=True)
@@ -1221,10 +1225,23 @@ class Client:
     def game_over_loop(self):
         show_loop = True
 
+        over_timer = 0
+        lobg = []
+
+        if self.player.playerId == self.game.winning_player:
+            pygame.mixer.music.load('music/bulb_biction.mp3')
+            pygame.mixer.music.play(-1)
+            lobg = [
+                pygame.image.load('images/end/end_1.png'),
+                pygame.image.load('images/end/end_2.png'),
+                pygame.image.load('images/end/end_3.png'),
+                pygame.image.load('images/end/end_4.png')
+            ]
+
         if self.player.playerId == self.game.winning_player:
             text = 'YOU WON!'
         else:
-            text = 'Player ' + self.game.winning_player.playerId + ' WON! $%^ LOSER!'
+            text = 'Player ' + str(self.game.winning_player) + ' WON! $%^ LOSER!'
 
         dim(self.window, (width, height))
         self.window.blit(self.menu, (self.menu_x, self.menu_y))
@@ -1237,6 +1254,15 @@ class Client:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
+
+            over_timer += 1
+            if over_timer == 1600:
+                over_timer = 0
+
+            if lobg:
+                self.window.blit(lobg[over_timer // 400], (0, 0))
+
+            pygame.display.update()
 
 
 client = Client()
