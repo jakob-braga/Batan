@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9990c564-21b2-460c-ba5a-92fb79e0428d" name="Default Changelist" comment="" />
+    <list default="true" id="9990c564-21b2-460c-ba5a-92fb79e0428d" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,7 +33,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/client.py" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.client2">
+  <component name="RunManager" selected="Python.client">
     <configuration name="client" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="catan" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -312,13 +314,13 @@
       <screen x="-1920" y="-485" width="1920" height="1040" />
     </state>
     <state width="968" height="528" key="XDebugger.FullValuePopup/0.0.1280.680/-1920.-485.1920.1040@-1920.-485.1920.1040" timestamp="1580166722807" />
-    <state x="337" y="166" key="com.intellij.ide.util.TipDialog" timestamp="1582245616822">
+    <state x="337" y="166" key="com.intellij.ide.util.TipDialog" timestamp="1582397226290">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="337" y="166" key="com.intellij.ide.util.TipDialog/0.0.1280.680/-1080.-844.1080.1880@0.0.1280.680" timestamp="1579467058022" />
     <state x="337" y="166" key="com.intellij.ide.util.TipDialog/0.0.1280.680/-1920.-485.1920.1040@0.0.1280.680" timestamp="1580164044590" />
     <state x="-1414" y="-582" key="com.intellij.ide.util.TipDialog/0.0.1280.680/-1920.-836.1920.1040@-1920.-836.1920.1040" timestamp="1581546161786" />
-    <state x="337" y="166" key="com.intellij.ide.util.TipDialog/0.0.1280.680/-1920.-836.1920.1040@0.0.1280.680" timestamp="1582245616822" />
+    <state x="337" y="166" key="com.intellij.ide.util.TipDialog/0.0.1280.680/-1920.-836.1920.1040@0.0.1280.680" timestamp="1582397226290" />
     <state x="-1414" y="-710" key="com.intellij.ide.util.TipDialog/0.0.1280.680/-1920.-964.1920.1040@-1920.-964.1920.1040" timestamp="1580073893112" />
     <state x="-31" y="-826" key="com.intellij.ide.util.TipDialog/0.0.1280.680/-537.-1080.1920.1040@-537.-1080.1920.1040" timestamp="1580510947740" />
     <state x="337" y="166" key="com.intellij.ide.util.TipDialog/0.0.1280.680/-537.-1080.1920.1040@0.0.1280.680" timestamp="1580344843961" />
