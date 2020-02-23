@@ -349,14 +349,15 @@ class Client:
         self.window.blit(self.resource_title, (self.resource_title_x, self.resource_title_y))
         self.window.blit(self.option_title, (self.option_title_x, self.option_title_y))
 
-        # longest road/largest army
+        # longest road/largest army/devcards
         if self.game.longest_road != -1:
             self.print_text((width - 220, 10, 240, 200), 'Longest Road: Player ' + str(self.game.longest_road))
         if self.game.largest_army != -1:
             self.print_text((width - 220, 35, 240, 200), 'Largest Army: Player ' + str(self.game.largest_army))
         if self.game.players[self.game.player_turn].dev_cards:
             dev_card_count_text = 'Player ' + str(self.game.player_turn) + ' has '
-            dev_card_count_text = dev_card_count_text + str(len(self.game.players[self.game.player_turn].dev_cards)) + ' unplayed dev cards'
+            dev_card_count_text = dev_card_count_text + str(len(self.game.players[self.game.player_turn].dev_cards))
+            dev_card_count_text = dev_card_count_text + ' unplayed dev card(s)'
             self.print_text((self.side_bar_width + 10, height - 25, width, 40), dev_card_count_text)
 
         self.draw_buttons(self.buttons)
@@ -1225,50 +1226,24 @@ class Client:
     def game_over_loop(self):
         show_loop = True
 
-        over_timer = 0
-        lobg = []
+        if self.player.playerId == self.game.winning_player:
+            text = 'YOU WON!'
+        else:
+            text = 'Player ' + str(self.game.winning_player) + ' WON! $%^ LOSER!'
 
-        try:
+        dim(self.window, (width, height))
+        self.window.blit(self.menu, (self.menu_x, self.menu_y))
+        self.print_text((self.menu_x, self.menu_y + 100, self.menu.get_width(), 200), text, clear=False, center=True)
 
-            if self.player.playerId == self.game.winning_player:
-                pygame.mixer.music.load('music/bulb_biction.mp3')
-                pygame.mixer.music.play(-1)
-                lobg = [
-                    pygame.image.load('images/end/end_1.png'),
-                    pygame.image.load('images/end/end_2.png'),
-                    pygame.image.load('images/end/end_3.png'),
-                    pygame.image.load('images/end/end_4.png')
-                ]
+        while show_loop:
 
-            if self.player.playerId == self.game.winning_player:
-                text = 'YOU WON!'
-            else:
-                text = 'Player ' + str(self.game.winning_player) + ' WON! $%^ LOSER!'
+            clock.tick(60)
 
-            dim(self.window, (width, height))
-            self.window.blit(self.menu, (self.menu_x, self.menu_y))
-            self.print_text((self.menu_x, self.menu_y + 100, self.menu.get_width(), 200), text, clear=False, center=True)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
 
-            while show_loop:
-
-                clock.tick(60)
-
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        exit()
-
-                over_timer += 1
-                if over_timer == 1600:
-                    over_timer = 0
-
-                if lobg:
-                    self.window.blit(lobg[over_timer // 400], (0, 0))
-
-                pygame.display.update()
-
-        except Exception as e:
-            print(e)
-            input()
+            pygame.display.update()
 
 
 client = Client()

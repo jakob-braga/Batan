@@ -43,10 +43,12 @@ def back_to_text(low):
         text = text + word
     return text
 
+
 def list_of_str_to_str(start, los):
     new_str = start
-    for i in range(0, len(los)):
-        new_str = new_str + los[i].capitalize()
-        if i != len(los) - 1:
+    new_lst = los.copy()
+    for i in range(0, len(new_lst)):
+        new_str = new_str + new_lst[i].capitalize()
+        if i != len(new_lst) - 1:
             new_str = new_str + ', '
     return new_str

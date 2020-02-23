@@ -235,12 +235,10 @@ class Game:
 
     def trade_accepted(self):
         self.in_trade = False
-        self.resources_to_give = []
         self.accept_trade = True
 
     def trade_collected(self):
         self.accept_trade = False
-        self.resources_to_get = []
 
     def vp_updates(self):
         for player in self.players:
