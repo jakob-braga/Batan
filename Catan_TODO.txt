@@ -1,0 +1,21 @@
+Next Steps:
+- display victory points
+- add button click noise  // need to figure out why exe isnt playing music (Failed loading libmpg123.dll: The specified module could not be found.)
+- add prompt for monopoly
+
+
+Known Bugs:
+- look into fixing (exiting building screen, exiting trade)
+- fix trade menu
+- when stealing from a player, if the player attempted didnt have a resource
+  it doesnt move on.
+- problem with exe not loading music files
+
+
+Catan Features:
+- one dev card per turn?
+- steal if more than 7?
+
+
+CURRENT COMMIT PROBLEMS:
+- players start with resources
